@@ -10,9 +10,9 @@ let mySql = require('mysql');
 let query = require('querystring');
 let bdd = mySql.createConnection({
     host: 'localhost',
-    user: 'lery',
+    user: 'root',
     password: '',
-    database: 'login'
+    database: 'projetweb'
 });
 
 app.use(express.static(path.join(__dirname, '/html')));
@@ -34,37 +34,36 @@ app.get('/index.html', function (req, res) {
 
 app.get("/Annonces.html", function (req, res) {
     console.log("Page Annonces");
-    let login = req.query.loginText;
+    let login = req.query.myLogin;
     console.log(url.parse(req.url, true).pathname);
     console.log(login);
     res.sendFile(__dirname + '/Annonces.html');
 });
 
-server.on('request', function (req, res) {
+app.post('/session.html', function (req, res) {
+    console.log("Route /session.html");
+    let login = req.body.myLogin;
+    console.log(login);
+
+    let sql = 'SELECT COUNT(*) FROM login WHERE login = "' + login + '";';
+    console.log(sql);
     bdd.connect(function (err) {
-
-        app.post('/session.html', function (req, res) {
-            let login = req.query.loginText;
-            console.log(login);
-
-            let sql = 'SELECT COUNT(*) FROM login L WHERE L.login = "' + login + '";';
-
-            bdd.query(sql, function (err, result) {
-                if (err) {
-                    console.log('Erreur ce login n\'est pas dans la bdd');
-                    res.sendFile(__dirname + '/index.html');
-                    throw err;
-                    bdd.end();
-                } else{
-                    console.log('login présent dans la bdd');
-                    res.sendFile(__dirname + '/Annonces.html');
-                }//Gérer le cas ou c'est null
-            console.log(result);
-            bdd.end();
-            });
+        if (err) throw err;
+        console.log("Connecté a la bdd!");
+        bdd.query(sql, function (err, result) {
+            if (err || login == "") {
+                console.log('Erreur ce login n\'est pas dans la bdd');
+                res.send('/index.html');
+                bdd.end();
+            } else {
+                console.log('login présent dans la bdd');
+                res.send('/Annonces.html');
+                console.log(url.parse(req.url, true).pathname);
+                bdd.end();
+            }
         });
-
     });
+
 });
 
 app.listen(port, function (req, res) {

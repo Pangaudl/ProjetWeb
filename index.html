@@ -1,33 +1,33 @@
 <!DOCTYPE html>
 <html lang="fr">
 
-<head>
-    <link rel="stylesheet" href="styles.css">
-</head>
-
 <body>
-    
-    <div id="loginText">
-        <h1>Connexion</h1>
+
+    <h1>Connexion</h1>
+    <div>
         <label for="loginText">Login : </label>
-        <input type="texte" name="loginText">
+        <input type="texte" name="loginText" id="loginText">
         <button type="button" onclick="loadDoc()">OK</button>
-        <a href="/APropos.html" class="A Propos">A Propos</a>
-    
-        <input type="submit" value="Cookie" >
     </div>
+
+    <a href="/APropos.html" class="A Propos">A Propos</a>
+
+    <input type="button" value="Cookie">
+
 </body>
 <SCRIPT>
     function loadDoc() {
         const xhttp = new XMLHttpRequest();
 
-        xhttp.onload = function () {
-            document.getElementById("loginText").innerHTML = this.responseText;
+        xhttp.onload = function(){
+            window.location.href = this.responseText; 
         }
 
         xhttp.open("POST", "/session.html", true);
-        xhttp.setRequestHeader("Content-type", "appliation/x-www-form-urlencoded");
-        xhttp.send();
+        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        let myLogin = document.getElementById("loginText").value;
+        console.log("Login saisi : " + myLogin);
+        xhttp.send("myLogin=" + myLogin);
     }
 </SCRIPT>
 
