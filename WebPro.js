@@ -14,6 +14,18 @@ let bdd = mySql.createConnection({
     password: '',
     database: 'projetweb'
 });
+let sessions = require('express-session');
+
+// 2h en ms
+const twoHours = 1000 * 60 * 60 * 2;
+
+app.use(sessions({
+    secret: "secretkeyfhrgfgrfrty84fwir767",
+    saveUninitialized: true,
+    cookie: { maxAge: twoHours },
+    resave: false
+}));
+
 
 app.use(express.static(path.join(__dirname, '/html')));
 app.use(express.static(path.join(__dirname, '/css')));
@@ -27,43 +39,65 @@ app.get('/APropos.html', function (req, res) {
 /************FIN IMPACT ROUTAGE STATIC******************/
 
 app.get('/index.html', function (req, res) {
-    console.log("Page index");
+    console.log("Page index1");
+    res.sendFile(__dirname + '/index.html');
+});
+app.get('/', function (req, res) {
+    console.log("Page index2");
     res.sendFile(__dirname + '/index.html');
 });
 
-
 app.get("/Annonces.html", function (req, res) {
     console.log("Page Annonces");
-    let login = req.query.myLogin;
-    console.log(url.parse(req.url, true).pathname);
-    console.log(login);
-    res.sendFile(__dirname + '/Annonces.html');
+    if(req.session.sessionLog !== undefined){
+        let login = req.session.sessionLog;
+        console.log(login);
+        res.sendFile(__dirname + '/Annonces.html');
+    }else{
+        res.redirect('/index.html');
+    }
 });
 
 app.post('/session.html', function (req, res) {
     console.log("Route /session.html");
     let login = req.body.myLogin;
-    console.log(login);
-
-    let sql = 'SELECT COUNT(*) FROM login WHERE login = "' + login + '";';
-    console.log(sql);
-    bdd.connect(function (err) {
-        if (err) throw err;
-        console.log("Connecté a la bdd!");
-        bdd.query(sql, function (err, result) {
-            if (err || login == "") {
-                console.log('Erreur ce login n\'est pas dans la bdd');
-                res.send('/index.html');
-                bdd.end();
-            } else {
-                console.log('login présent dans la bdd');
-                res.send('/Annonces.html');
-                console.log(url.parse(req.url, true).pathname);
-                bdd.end();
-            }
+    //console.log(login);
+    if(req.session.sessionLog === undefined){
+        let sql = 'SELECT COUNT(*) FROM login WHERE login = "' + login + '";';
+        //console.log(sql);
+        bdd.connect(function (err) {
+            if (err) throw err;
+            console.log("Connecté a la bdd!");
+            bdd.query(sql, function (err, result) {
+                if (err || login == "" || result == 0) {
+                    console.log('Erreur ce login n\'est pas dans la bdd');
+                    res.send('/index.html');
+                } else {
+                    console.log('login présent dans la bdd');
+                    //console.log(url.parse(req.url, true).pathname);
+                    req.session.sessionLog = login;
+                    console.log(req.session);
+                    res.send('/Annonces.html');
+                }
+                bdd.end;
+                console.log("Déconnecté");
+            });
         });
-    });
+    }else{
+        res.send('/index.html');
+    }
+});
 
+app.get('/nosession.html', function (req, res) {
+    console.log(req.session);
+    if(req.session.sessionLog != undefined){
+        req.session.destroy();
+        console.log("Destruction de la session!");
+        console.log(req.session);    
+        res.redirect('/index.html');
+    }else{
+        res.redirect('/index.html');
+    }
 });
 
 app.listen(port, function (req, res) {

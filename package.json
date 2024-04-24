@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "express": "^4.19.2",
+    "express-session": "^1.18.0",
     "mysql": "^2.18.1"
   },
   "name": "projetweb",
@@ -11,6 +12,5 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "léry",
-  "license": "ISC",
-  "devDependencies": {}
+  "license": "ISC"
 }
