@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    
+    <div id="loginText">
+        <h1>Connexion</h1>
+        <label for="loginText">Login : </label>
+        <input type="texte" name="loginText">
+        <button type="button" onclick="loadDoc()">OK</button>
+        <a href="/APropos.html" class="A Propos">A Propos</a>
+    
+        <input type="submit" value="Cookie" >
+    </div>
+</body>
+<SCRIPT>
+    function loadDoc() {
+        const xhttp = new XMLHttpRequest();
+
+        xhttp.onload = function () {
+            document.getElementById("loginText").innerHTML = this.responseText;
+        }
+
+        xhttp.open("POST", "/session.html", true);
+        xhttp.setRequestHeader("Content-type", "appliation/x-www-form-urlencoded");
+        xhttp.send();
+    }
+</SCRIPT>
+
+</html>

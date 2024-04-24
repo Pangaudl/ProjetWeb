@@ -1,5 +1,16 @@
 {
   "dependencies": {
-    "express": "^4.19.2"
-  }
+    "express": "^4.19.2",
+    "mysql": "^2.18.1"
+  },
+  "name": "projetweb",
+  "version": "1.0.0",
+  "description": "ProjetWeb",
+  "main": "WebPro.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "léry",
+  "license": "ISC",
+  "devDependencies": {}
 }
