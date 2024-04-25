@@ -75,7 +75,7 @@ app.get("/Annonces.html", function (req, res) {
 
 app.get('/createCookie.html', function (req, res) {
     // Création de trois cookies
-    res.cookie('nomCookie', 'valeurCookie3', {
+    res.cookie('nomCookie', 'valeurCookie', {
         maxAge: 3600000,
         expires: new Date('01 122022'),
         secure: true,
@@ -83,7 +83,7 @@ app.get('/createCookie.html', function (req, res) {
         SameSite: true
     });
     console.log(req.cookies);
-    res.send('Cookies created');
+    res.redirect('/index.html');
 });
 
 

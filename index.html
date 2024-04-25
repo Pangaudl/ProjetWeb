@@ -12,7 +12,7 @@
 
     <a href="/APropos.html" class="A Propos">A Propos</a>
 
-    <a href="./createCookie.html">Création de cookies</a>
+    <button type="button" onclick="onclickcookie()">Création de cookies</button>
 
 </body>
 <SCRIPT>
@@ -29,6 +29,12 @@
         console.log("Login saisi : " + myLogin);
         xhttp.send("myLogin=" + myLogin);
     }
+
+    function onclickcookie(){
+        window.location.href = "/createCookie.html";
+    }
+
+
 </SCRIPT>
 
 </html>
