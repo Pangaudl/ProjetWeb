@@ -3,9 +3,8 @@ const app = express();
 const url = require("url");
 const path = require('path');
 const port = 8080;
+const fs = require('fs');
 
-let http = require('http');
-let server = http.createServer();
 let mySql = require('mysql');
 let query = require('querystring');
 let bdd = mySql.createConnection({
@@ -15,6 +14,7 @@ let bdd = mySql.createConnection({
     database: 'projetweb'
 });
 let sessions = require('express-session');
+let data = '';
 
 // 2h en ms
 const twoHours = 1000 * 60 * 60 * 2;
@@ -49,10 +49,23 @@ app.get('/', function (req, res) {
 
 app.get("/Annonces.html", function (req, res) {
     console.log("Page Annonces");
+    
     if (req.session.sessionLog !== undefined) {
         let login = req.session.sessionLog;
         console.log(login);
-        res.sendFile(__dirname + '/Annonces.html');
+
+        fs.readFile(__dirname + '/Annonces.html', 'utf8', function(err, data){
+            if (err){
+                res.writeHead(404, {'Content-Type': 'text/html charset=utf-8'});
+                res.end('Fichier non trouvé!')
+            } else{
+                res.writeHead(200, {'Content-Type': 'text/html charset=utf-8'});
+                data = data.replace('{{loginAnn}}', login);
+                //console.log(data);
+                res.end(data);
+            }
+            //res.sendFile(__dirname + '/Annonces.html');
+        });
     } else {
         res.redirect('/index.html');
     }
@@ -70,9 +83,9 @@ app.post('/session.html', function (req, res) {
             bdd.connect(function (err) {
                 if (err) throw err;
                 console.log("Connecté a la bdd!");
-                console.log(bdd.state);
+                //console.log(bdd.state);
                 bdd.query(sql, function (err, result) {
-                    console.log(result[0]);
+                    //console.log(result[0]);
                     if (err || login == "" || result[0]["COUNT(*)"] === 0) {
                         console.log('Erreur ce login n\'est pas dans la bdd');
                         res.send('/index.html');
@@ -80,7 +93,8 @@ app.post('/session.html', function (req, res) {
                         console.log('login présent dans la bdd');
                         //console.log(url.parse(req.url, true).pathname);
                         req.session.sessionLog = login;
-                        console.log(req.session);
+                        //console.log(req.session);
+                        console.log(data);
                         res.send('/Annonces.html');
                     }
                     bdd.end;
@@ -97,7 +111,7 @@ app.post('/session.html', function (req, res) {
                     console.log('login présent dans la bdd');
                     //console.log(url.parse(req.url, true).pathname);
                     req.session.sessionLog = login;
-                    console.log(req.session);
+                    //console.log(req.session);
                     res.send('/Annonces.html');
                 }
                 bdd.end;
