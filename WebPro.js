@@ -94,7 +94,7 @@ app.post('/session.html', function (req, res) {
     if (req.session.sessionLog === undefined) {
         let sql = 'SELECT COUNT(*) FROM login WHERE login = "' + login + '";';
         //console.log(sql);
-        console.log(bdd.state);
+        //console.log(bdd.state);
         if (bdd.state == 'disconnected') {
             bdd.connect(function (err) {
                 if (err) throw err;

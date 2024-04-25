@@ -11,7 +11,37 @@
         <input type="submit" value="Déconnexion">
         <h1>Listes Annonces</h1>
         <input type="texte" name="Annonces">
+        <div ng-app="myApp">
+            <annonces-template id={{id}} titre={{titre}} description={{description}} image={{image}}></annonces-template>
+        </div>
     </form>
 </body>
+
+<SCRIPT>
+    // Module AngularJS
+    var app = angular.module('myApp', []);
+
+    // Contrôleur
+    app.controller('myController', function ($scope) {
+        $scope.onClickFunct = function () {
+
+        };
+    });
+
+    app.directive('annoncesTemplate', function () {
+        return {
+            scope: {
+                id : '@',
+                titre : '@',
+                description : '@',
+                image : '@'
+
+            },
+
+            template: '<div>id={{id}} titre={{titre}} description={{description}} image={{image}}</div>'
+        };
+    });
+</script>
+</SCRIPT>
 
 </html>
