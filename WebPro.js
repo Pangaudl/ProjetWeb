@@ -15,6 +15,7 @@ let bdd = mySql.createConnection({
 });
 let sessions = require('express-session');
 let data = '';
+let cookieParser = require('cookie-parser');
 
 // 2h en ms
 const twoHours = 1000 * 60 * 60 * 2;
@@ -30,6 +31,7 @@ app.use(sessions({
 app.use(express.static(path.join(__dirname, '/html')));
 app.use(express.static(path.join(__dirname, '/css')));
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 /********************ROUTAGE STATIC*********************/
 app.get('/APropos.html', function (req, res) {
@@ -49,17 +51,17 @@ app.get('/', function (req, res) {
 
 app.get("/Annonces.html", function (req, res) {
     console.log("Page Annonces");
-    
+
     if (req.session.sessionLog !== undefined) {
         let login = req.session.sessionLog;
         console.log(login);
 
-        fs.readFile(__dirname + '/Annonces.html', 'utf8', function(err, data){
-            if (err){
-                res.writeHead(404, {'Content-Type': 'text/html charset=utf-8'});
+        fs.readFile(__dirname + '/Annonces.html', 'utf8', function (err, data) {
+            if (err) {
+                res.writeHead(404, { 'Content-Type': 'text/html charset=utf-8' });
                 res.end('Fichier non trouvé!')
-            } else{
-                res.writeHead(200, {'Content-Type': 'text/html charset=utf-8'});
+            } else {
+                res.writeHead(200, { 'Content-Type': 'text/html charset=utf-8' });
                 data = data.replace('{{loginAnn}}', login);
                 //console.log(data);
                 res.end(data);
@@ -70,6 +72,20 @@ app.get("/Annonces.html", function (req, res) {
         res.redirect('/index.html');
     }
 });
+
+app.get('/createCookie.html', function (req, res) {
+    // Création de trois cookies
+    res.cookie('nomCookie', 'valeurCookie3', {
+        maxAge: 3600000,
+        expires: new Date('01 122022'),
+        secure: true,
+        httpOnly: true,
+        SameSite: true
+    });
+    console.log(req.cookies);
+    res.send('Cookies created');
+});
+
 
 app.post('/session.html', function (req, res) {
     console.log("Route /session.html");
