@@ -49,11 +49,11 @@ app.get('/', function (req, res) {
 
 app.get("/Annonces.html", function (req, res) {
     console.log("Page Annonces");
-    if(req.session.sessionLog !== undefined){
+    if (req.session.sessionLog !== undefined) {
         let login = req.session.sessionLog;
         console.log(login);
         res.sendFile(__dirname + '/Annonces.html');
-    }else{
+    } else {
         res.redirect('/index.html');
     }
 });
@@ -62,14 +62,35 @@ app.post('/session.html', function (req, res) {
     console.log("Route /session.html");
     let login = req.body.myLogin;
     //console.log(login);
-    if(req.session.sessionLog === undefined){
+    if (req.session.sessionLog === undefined) {
         let sql = 'SELECT COUNT(*) FROM login WHERE login = "' + login + '";';
         //console.log(sql);
-        bdd.connect(function (err) {
-            if (err) throw err;
-            console.log("Connecté a la bdd!");
+        console.log(bdd.state);
+        if (bdd.state == 'disconnected') {
+            bdd.connect(function (err) {
+                if (err) throw err;
+                console.log("Connecté a la bdd!");
+                console.log(bdd.state);
+                bdd.query(sql, function (err, result) {
+                    console.log(result[0]);
+                    if (err || login == "" || result[0]["COUNT(*)"] === 0) {
+                        console.log('Erreur ce login n\'est pas dans la bdd');
+                        res.send('/index.html');
+                    } else {
+                        console.log('login présent dans la bdd');
+                        //console.log(url.parse(req.url, true).pathname);
+                        req.session.sessionLog = login;
+                        console.log(req.session);
+                        res.send('/Annonces.html');
+                    }
+                    bdd.end;
+                    console.log("Déconnecté");
+                });
+            });
+        } else {
+            console.log("Déjà connecté a la bdd!");
             bdd.query(sql, function (err, result) {
-                if (err || login == "" || result == 0) {
+                if (err || login == "" || result[0]["COUNT(*)"] === 0) {
                     console.log('Erreur ce login n\'est pas dans la bdd');
                     res.send('/index.html');
                 } else {
@@ -82,20 +103,21 @@ app.post('/session.html', function (req, res) {
                 bdd.end;
                 console.log("Déconnecté");
             });
-        });
-    }else{
+        }
+
+    } else {
         res.send('/index.html');
     }
 });
 
 app.get('/nosession.html', function (req, res) {
     console.log(req.session);
-    if(req.session.sessionLog != undefined){
+    if (req.session.sessionLog != undefined) {
         req.session.destroy();
         console.log("Destruction de la session!");
-        console.log(req.session);    
+        console.log(req.session);
         res.redirect('/index.html');
-    }else{
+    } else {
         res.redirect('/index.html');
     }
 });
