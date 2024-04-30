@@ -3,45 +3,68 @@
 
 <head>
     <meta charset="UTF-8">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.3/angular.min.js"></script>
 </head>
 
-<body>
+<body ng-app="myApp" ng-controller="myCtrl">
     <div>Login : {{loginAnn}}</div>
     <form action="/nosession.html" method='GET'>
         <input type="submit" value="Déconnexion">
         <h1>Listes Annonces</h1>
-        <input type="texte" name="Annonces">
-        <div ng-app="myApp">
-            <annonces-template id={{id}} titre={{titre}} description={{description}} image={{image}}></annonces-template>
-        </div>
     </form>
+
+    <!-- Ajout de la directive -->
+    <h2>Template</h2>
+    <div ng-repeat="x in annonces">
+        
+        <annonces-template id={{x.id}} titre={{x.titre}} description={{x.description}} image={{x.image}}></annonces-template>
+    
+</div>
+
 </body>
 
-<SCRIPT>
-    // Module AngularJS
+<script>
+
+    // AJAX
+    function loadDoc(myCtrlScope){
+        let xhttp = new XMLHttpRequest();
+        console.log("on load");
+        xhttp.onload = function(){
+            annonces = JSON.parse(this.responseText);
+            console.log("annonces : "+ annonces);
+            myCtrlScope.$apply(function() {
+                myCtrlScope.messageTest = 'Message Test'; 
+                myCtrlScope.annonces = annonces; 
+                console.log("scope : "+ myCtrlScope.annonces);
+            });
+        }
+        xhttp.open("GET", "/ajax", true);
+        xhttp.send();
+    }
+    
+    // Définition d'un module AngularJS
     var app = angular.module('myApp', []);
-
-    // Contrôleur
-    app.controller('myController', function ($scope) {
-        $scope.onClickFunct = function () {
-
-        };
+    
+    // Définition d'un contrôleur "MainController"
+    app.controller('myCtrl', function($scope) {
+        console.log("on load");
+        loadDoc($scope);
     });
-
+    
     app.directive('annoncesTemplate', function () {
-        return {
-            scope: {
-                id : '@',
-                titre : '@',
-                description : '@',
-                image : '@'
-
-            },
-
-            template: '<div>id={{id}} titre={{titre}} description={{description}} image={{image}}</div>'
-        };
-    });
-</script>
-</SCRIPT>
+            return {
+                scope: {
+                    id : '@',
+                    titre : '@',
+                    description : '@',
+                    image : '@'
+    
+                },
+    
+                template: '<div><h3>titre : {{titre}}</h3>description : {{description}} <img src="{{image}}"/></div>'
+            };
+        });
+    
+    </script>
 
 </html>

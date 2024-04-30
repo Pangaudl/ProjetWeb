@@ -30,6 +30,7 @@ app.use(sessions({
 
 app.use(express.static(path.join(__dirname, '/html')));
 app.use(express.static(path.join(__dirname, '/css')));
+app.use(express.static(path.join(__dirname, '/img')));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
@@ -86,7 +87,6 @@ app.get('/createCookie.html', function (req, res) {
     res.redirect('/index.html');
 });
 
-
 app.post('/session.html', function (req, res) {
     console.log("Route /session.html");
     let login = req.body.myLogin;
@@ -138,6 +138,25 @@ app.post('/session.html', function (req, res) {
     } else {
         res.send('/index.html');
     }
+});
+
+app.get('/ajax', function (req, res) {
+    console.log("*** ROUTE AJAX ***");
+    let sql = 'SELECT * FROM annonces;';
+    if (bdd.state == 'disconnected') {
+        bdd.connect(function (err) {
+            if (err) throw err;
+        });
+    }
+     
+    bdd.query(sql, function (err, result) {
+        if (err) throw err;
+        else {
+            res.send(result);
+            bdd.end;
+            console.log("Déconnecté");
+        }
+    });
 });
 
 app.get('/nosession.html', function (req, res) {
