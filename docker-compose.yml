@@ -1,0 +1,37 @@
+version: '3.2'
+
+volumes:
+  mysql-data:
+
+services:
+  node:
+    container_name: monnode-lerman
+    image: monnode
+    ports:
+      - "8080:8080"
+    restart: always
+
+  mysql:
+    image: mariadb
+    container_name: monmysql
+    environment:
+      MYSQL_ROOT_PASSWORD: "manon"
+      MYSQL_DATABASE: "projetWeb"  # Nom de la base de données à créer
+      MYSQL_USER: "root"
+      MYSQL_PASSWORD: "manon"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin_container
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: "manon"  # Mot de passe root MySQL
+    ports:
+      - "8081:80"  # Port pour accéder à phpMyAdmin depuis le navigateur
+    depends_on:
+      - mysql
