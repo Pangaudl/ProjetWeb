@@ -11,7 +11,7 @@ let bdd = mySql.createConnection({
     host: 'localhost',
     user: 'root',
     password: '',
-    database: 'projetweb'
+    database: 'projetWeb'
 });
 let sessions = require('express-session');
 let data = '';
